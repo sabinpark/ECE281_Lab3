@@ -5,11 +5,11 @@ Sabin's Lab 3
 
 # Prelab
 I was provided five files:
-  Clock_Divider.vhd
-  nexys2_sseg.vhd
-  Nexys2_top_shell.vhd
-  nibble_to_sseg.vhd
-  pinout.ucf
+  1. Clock_Divider.vhd
+  2. nexys2_sseg.vhd
+  3. Nexys2_top_shell.vhd
+  4. nibble_to_sseg.vhd
+  5. pinout.ucf
 
 Given these files and a very simple box of the Nexys2_top_shell, I read through the comments and came up with a schematic of my own.  
 
