@@ -16,3 +16,22 @@ Given these files and a very simple box of the Nexys2_top_shell, I read through 
 ![alt text](https://raw.github.com/sabinpark/ECE281_Lab3/master/Nexys2_top_shell_schematic.PNG "Nexys2_top_shell Schematic")
 
 As shown in the schematic, several signals such as the switch, LED, reset, and Clock_Divider have not been assigned to anything yet.
+
+# Lab
+
+## Part 1: Required Functionality
+
+I added the component instatiation of the Moore elevator controller to the Nexys2_top_shell.  I created a signal called *moore_floor* that was set to *nibble0*.  I instantiated the moore elevator controller as shown below:
+
+```vhdl
+	Inst_MooreElevatorController_Shell: MooreElevatorController_Shell PORT MAP(
+		clk => ClockBus_sig(25),
+		reset => btn(3),
+		stop => switch(0),
+		up_down => switch(1),
+		floor => moore_floor
+	);
+```
+
+### Test
+I started at floor 1 and allowed the elevator to rise up floor by floor until it reached floor 4.  In the middle, I tested the stop funcitonality by setting *stop* to 1.  When *stop* equaled 1, the elevator stayed on the floor without moving up.  At floor 4, the elvator remained where it was.  Once I set *up_down* to 0, the elevator moved down floor by floor.  At floor 3, I tested out the stop functionality again; it worked.  At floor 2, I set *stop* to 1, then reset the elevator.  The elevator then returned to 1 as it should.  Functionality = success!
