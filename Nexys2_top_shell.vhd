@@ -103,12 +103,29 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 		);
 	END COMPONENT;
 	-- [BISIAN END]
+	
+	-- [BISAIN]
+	COMPONENT MealyElevatorController_Shell
+	PORT(
+		clk : IN std_logic;
+		reset : IN std_logic;
+		stop : IN std_logic;
+		up_down : IN std_logic;          
+		floor : OUT std_logic_vector(3 downto 0);
+		nextfloor : OUT std_logic_vector(3 downto 0)
+		);
+	END COMPONENT;
+	-- [BISAIN END]
 
 --------------------------------------------------------------------------------------
 --Insert any required signal declarations below
 --------------------------------------------------------------------------------------
+	-- [BISAIN]
 	signal moore_floor : std_logic_vector(3 downto 0);
-
+	
+	signal mealy_floor : std_logic_vector(3 downto 0);
+	signal mealy_next_floor : std_logic_vector(3 downto 0);
+	-- [BISAIN END]
 
 begin
 
@@ -135,8 +152,8 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --		  Example: if you are not using 7-seg display #3 set nibble3 to "0000"
 --------------------------------------------------------------------------------------
 
-nibble0 <= moore_floor;
-nibble1 <= "0000";
+nibble0 <= mealy_floor;
+nibble1 <= mealy_next_floor;
 nibble2 <= "0000";
 nibble3 <= "0000";
 
@@ -185,6 +202,17 @@ nibble3 <= "0000";
 		stop => switch(0),
 		up_down => switch(1),
 		floor => moore_floor
+	);
+	-- [BISAIN END]
+	
+	-- [BISAIN]
+	Inst_MealyElevatorController_Shell: MealyElevatorController_Shell PORT MAP(
+		clk => ClockBus_sig(25),
+		reset => btn(3),
+		stop => switch(0),
+		up_down => switch(1),
+		floor => mealy_floor,
+		nextfloor => mealy_next_floor
 	);
 	-- [BISAIN END]
 
