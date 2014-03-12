@@ -15,7 +15,7 @@ Given these files and a very simple box of the Nexys2_top_shell, I read through 
 
 ![alt text](https://raw.github.com/sabinpark/ECE281_Lab3/master/Nexys2_top_shell_schematic.PNG "Nexys2_top_shell Schematic")
 
-As shown in the schematic, several signals such as the switch, LED, reset, and Clock_Divider have not been assigned to anything yet.
+As shown in the schematic, several signals such as the switch, btn, and reset have not been assigned to anything yet.
 
 # Lab
 
