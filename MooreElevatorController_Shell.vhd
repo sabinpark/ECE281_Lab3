@@ -3,9 +3,9 @@
 -- Engineer: Silva
 -- 
 -- Create Date:    	10:33:47 07/07/2012 
--- Design Name:		CE3
+-- Design Name:		Lab3
 -- Module Name:    	MooreElevatorController_Shell - Behavioral 
--- Description: 		Shell for completing CE3
+-- Description: 		Shell for completing CE3 and implemented in Lab3
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;

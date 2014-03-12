@@ -116,6 +116,20 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 		);
 	END COMPONENT;
 	-- [BISAIN END]
+	
+	
+	-- same as the Moore component above, but used for the B part 1 functionality
+	COMPONENT MooreElevatorController_Shell_B1
+	PORT(
+		clk : IN std_logic;
+		reset : IN std_logic;
+		stop : IN std_logic;
+		up_down : IN std_logic;          
+		floor : OUT std_logic_vector(3 downto 0);
+		floor_tens : OUT std_logic_vector(3 downto 0)
+		);
+	END COMPONENT;
+	
 
 --------------------------------------------------------------------------------------
 --Insert any required signal declarations below
@@ -125,6 +139,9 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	
 	signal mealy_floor : std_logic_vector(3 downto 0);
 	signal mealy_next_floor : std_logic_vector(3 downto 0);
+	
+	signal moore_floor_b1 : std_logic_vector(3 downto 0);
+	signal moore_floor_tens_b1 : std_logic_vector(3 downto 0);
 	-- [BISAIN END]
 
 begin
@@ -152,8 +169,8 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --		  Example: if you are not using 7-seg display #3 set nibble3 to "0000"
 --------------------------------------------------------------------------------------
 
-nibble0 <= mealy_floor;
-nibble1 <= mealy_next_floor;
+nibble0 <= moore_floor_b1; --mealy_floor;
+nibble1 <= moore_floor_tens_b1; --mealy_next_floor;
 nibble2 <= "0000";
 nibble3 <= "0000";
 
@@ -215,6 +232,17 @@ nibble3 <= "0000";
 		nextfloor => mealy_next_floor
 	);
 	-- [BISAIN END]
+	
+	
+	-- same as the moore instantiation above, but used for B part 1 functionality
+	Inst_MooreElevatorController_Shell_B1: MooreElevatorController_Shell_B1 PORT MAP(
+		clk => ClockBus_sig(25),
+		reset => btn(3),
+		stop => switch(0),
+		up_down => switch(1),
+		floor => moore_floor_b1,
+		floor_tens => moore_floor_tens_b1
+	);
 
 -----------------------------------------------------------------------------
 --Instantiate the design you with to implement below and start wiring it up!:
