@@ -84,7 +84,6 @@ Similar to the Moore test, I went through floor by floor and check the stop func
 ### More Floors
 This functionality will allow the elevator controller to handle the first 8 prime numbered floors.  The floors are as follows (from high to low):
 
-* Floor 23
 * Floor 19
 * Floor 17
 * Floor 13
@@ -95,6 +94,8 @@ This functionality will allow the elevator controller to handle the first 8 prim
 * Floor 2
 
 This part simply tests whether I can properly set my outputs and display them into any arbitrary value (in this case, prime numbers).
+
+That being said, I first attempted to create this functionality by 
 
 ### Change Inputs
 ...
