@@ -76,3 +76,25 @@ To fix my error, I got rid of *stop* from the if-statement and instead moved it 
 
 ### Test (Mealy)
 Similar to the Moore test, I went through floor by floor and check the stop functionality.  For this test, I also made sure my *nextfloor* value was correct as well.  If *up_down* was 1, then I expected my *nextfloor* to be one floor above (unless I was on floor 4, which then would display *nextfloor* as 4).  If *up_down* was 0, then I expected my *nextfloor* to be one floor below (unless I was on floor 1, which would display *nextfloor* as 1).  The stop functionality was tested as well and worked as designed.  Mealy test = success!
+
+
+## Part 2: B Functionality
+*NOTE*: the lab guidance suggested that I use the MOORE elevator controller as the baseline for the additional functionality.  
+
+### More Floors
+This functionality will allow the elevator controller to handle the first 8 prime numbered floors.  The floors are as follows (from high to low):
+
+* Floor 23
+* Floor 19
+* Floor 17
+* Floor 13
+* Floor 11
+* Floor 7
+* Floor 5
+* Floor 3
+* Floor 2
+
+This part simply tests whether I can properly set my outputs and display them into any arbitrary value (in this case, prime numbers).
+
+### Change Inputs
+...
