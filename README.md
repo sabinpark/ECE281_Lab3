@@ -114,5 +114,7 @@ Below is the changed output logic that accounts for both digits:
 		      "0000";
 ```
 
+With four more floors, with half of them being two digits, I synthesized, implemented, generated the programming file, then finally configured the fpga.  *stop*, *reset*, and *up_down* still were programmed to the same buttons and switches from earlier.  I conducted the same test (now with four additional floors) and found that everything worked as it was supposed to.  The sseg did display the correct floors as expected.  SUCCESS!
+
 ### Change Inputs
 ...
