@@ -95,7 +95,24 @@ This functionality will allow the elevator controller to handle the first 8 prim
 
 This part simply tests whether I can properly set my outputs and display them into any arbitrary value (in this case, prime numbers).
 
-That being said, I first attempted to create this functionality by 
+That being said, I created a new module called *MooreElevatorController_Shell_B1*, which was very similar to the original moore elevator controller shell.  The only differences were that I added more cases for four more floors, and I also had to define four more output logic statements and states.  Another key addition was a new std_logic_vector called *floor_tens*, which was used to set the tens place digit value.  Specifically, I set *floor_tens* to a value of 0 for floors 2, 3, 5, and 7, while I set the value to 1 for floors 11, 13, 17, and 19.  I had to do it this way in order to properly display the floor number on the sseg.  Essentially, I set nibble0 for the ones place value and nibble1 to the tens place value.
+
+Below is the changed output logic that accounts for both digits:
+```vhdl
+	floor <= "0010" when (floor_state = floor2) else
+		 "0011" when (floor_state = floor3) else
+		 "0101" when (floor_state = floor5) else
+		 "0111" when (floor_state = floor7) else
+		 "0001" when (floor_state = floor11) else
+		 "0011" when (floor_state = floor13) else
+		 "0111" when (floor_state = floor17) else
+		 "1001" when (floor_state = floor19) else
+		 "0001";
+				
+	floor_tens <= "0001" when (floor_state = floor11 or floor_state = floor13 
+		      or floor_state = floor17 or floor_state = floor19) else
+		      "0000";
+```
 
 ### Change Inputs
 ...
