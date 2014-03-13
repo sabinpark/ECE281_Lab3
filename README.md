@@ -117,4 +117,79 @@ Below is the changed output logic that accounts for both digits:
 With four more floors, with half of them being two digits, I synthesized, implemented, generated the programming file, then finally configured the fpga.  *stop*, *reset*, and *up_down* still were programmed to the same buttons and switches from earlier.  I conducted the same test (now with four additional floors) and found that everything worked as it was supposed to.  The sseg did display the correct floors as expected.  SUCCESS!
 
 ### Change Inputs
-...
+This functionality will have the input as a 3-bit number specifying the floor to go to, instead of having *stop* and *up_down* as the inputs.  The floors will be numbered from 0 to 7, and the elevator will have to go floor by floor without skipping any floors in between.  Also, the floor will move once per clock edge.
+
+*NOTE* I got rid of *reset* as well since the sseg will display a value corresponding to the switch configuration.
+
+I began by creating a new module called *MooreElevatorController_Shell_B2*.  This module has two inputs, *clk* and *desired_floor*.  *clk* is the same as the previous modules.  *desired_floor* is a 3-bit std_logic_vector that will be set by using three switches.  This module has one output called *output_floor*, which will be used to send the floor number to display on the sseg.
+
+Per the requirement, I set 8 states ranging from 0 to 7 within the signal, *floor_state*.
+
+Since I cannot set the output signal inside of the process, *floor_state_machine*, I had to create an intermediary signal called *current_floor*, which was a std_logic_vector (2:0) used to temporarily take in the value of the current floor.
+
+In the process, I first checked for a rising edge of the clock.  Inside of that if-statement, I checked whether the current floor was below the desired floor, above the desired floor, or at the desired floor.  If the current floor was not at the desired floor, the current floor would increment/decrement by one floor until the two floors matched.
+
+*NOTE* I had to cast *current_floor* to *unsigned* before adding/subtracting by 1, then recasted the answer to a *std_logic_vector*.
+```vhdl
+	if rising_edge(clk) then
+		-- if the current floor is below the desired floor, then go up one floor
+		if current_floor < desired_floor then
+			current_floor <= std_logic_vector(unsigned(current_floor) + 1);
+		-- if the current floor is above the desired floor, then go down one floor
+		elsif current_floor > desired_floor then
+			current_floor <= std_logic_vector(unsigned(current_floor) - 1);
+		-- otherwise, the current floor is at the desired floor
+		else
+			current_floor <= desired_floor;
+		end if;
+		
+		.
+		.
+		.
+```
+
+Right afterwards, I created another set of if-statements to set the value of *floor_state* according to the value of *current_floor*.  
+```vhdl
+	-- sets the floor state to the current floor
+	if current_floor = "000" then
+		floor_state <= floor0;
+	elsif current_floor = "001" then
+		floor_state <= floor1;
+	elsif current_floor = "010" then
+		floor_state <= floor2;
+	elsif current_floor = "011" then
+		floor_state <= floor3;
+	elsif current_floor = "100" then
+		floor_state <= floor4;
+	elsif current_floor = "101" then
+		floor_state <= floor5;
+	elsif current_floor = "110" then
+		floor_state <= floor6;
+	else
+		floor_state <= floor7;
+	end if;
+```
+
+Finally, for the output logic, I set the value of *output_floor* according to the value of *floor_state*.  *NOTE* I essentially had to add a 0 to the MSB of *current_floor* (3 bits) in order to properly set the nibble value in the main shell file.  Below is the code for the output logic. 
+
+```vhdl
+	-- output logic that sets the value of the output floor
+	output_floor <= "0000" when (floor_state = floor0) else
+			"0001" when (floor_state = floor1) else
+			"0010" when (floor_state = floor2) else
+			"0011" when (floor_state = floor3) else
+			"0100" when (floor_state = floor4) else
+			"0101" when (floor_state = floor5) else
+			"0110" when (floor_state = floor6) else
+			"0111";
+```
+
+Like with the previously added functionalities, I added the component and instantiation of this module to the Nexys2_top_shell file.  I set *nibble0* to a new signal I created called *moore_floor_b2*, the value of *output_floor*.
+
+I ran the newly generated bit file on the fpga with the switches initially set to "000".  As expected, the sseg displayed a "0000".  When I flipped the switch corresponding to the LSB, the elevator moved up to "0001".  I flipped the switches to "111", and the sseg eventually made its way up to "0007".  I then went back down to a switch configuration of "000" to find that the elevator moved down to "0000".  The floors were changed by 1 floor at a time per the instructions.  And of course, the sseg continued to display the floor number of the corresponding switch configuration the whole time the program was running.  B functionality is now complete!
+
+## Part 3: A Functionality
+
+### Moving Lights
+
+### Multiple Elevators
