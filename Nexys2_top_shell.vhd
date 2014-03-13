@@ -117,8 +117,9 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	END COMPONENT;
 	-- [BISAIN END]
 	
-	
-	-- same as the Moore component above, but used for the B part 1 functionality
+	-- [BISAIN] Added PART B Functionality
+	-- Used for the B part 1 functionality
+	-- same as the Moore component above
 	COMPONENT MooreElevatorController_Shell_B1
 	PORT(
 		clk : IN std_logic;
@@ -130,6 +131,15 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 		);
 	END COMPONENT;
 	
+	-- Used for the B part 2 functionality
+	COMPONENT MooreElevatorController_Shell_B2
+	PORT(
+		clk : IN std_logic;
+		desired_floor : IN std_logic_vector(2 downto 0);          
+		output_floor : OUT std_logic_vector(3 downto 0)
+		);
+	END COMPONENT;
+	-- [BISAIN END]
 
 --------------------------------------------------------------------------------------
 --Insert any required signal declarations below
@@ -142,6 +152,8 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	
 	signal moore_floor_b1 : std_logic_vector(3 downto 0);
 	signal moore_floor_tens_b1 : std_logic_vector(3 downto 0);
+	
+	signal moore_floor_b2 : std_logic_vector(3 downto 0);
 	-- [BISAIN END]
 
 begin
@@ -169,8 +181,27 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --		  Example: if you are not using 7-seg display #3 set nibble3 to "0000"
 --------------------------------------------------------------------------------------
 
-nibble0 <= moore_floor_b1; --mealy_floor;
-nibble1 <= moore_floor_tens_b1; --mealy_next_floor;
+-- Required Functionality [MOORE]
+--nibble0 <= moore_floor;
+--nibble1 <= "0000";
+--nibble2 <= "0000";
+--nibble3 <= "0000";
+
+-- Required Functionality [MEALY]
+--nibble0 <= mealy_floor;
+--nibble1 <= mealy_next_floor;
+--nibble2 <= "0000";
+--nibble3 <= "0000";
+
+-- B Functionality [MORE FLOORS]
+--nibble0 <= moore_floor_b1;
+--nibble1 <= moore_floor_tens_b1;
+--nibble2 <= "0000";
+--nibble3 <= "0000";
+
+-- B Functionality [CHANGE INPUTS]
+nibble0 <= moore_floor_b2;
+nibble1 <= "0000";
 nibble2 <= "0000";
 nibble3 <= "0000";
 
@@ -234,7 +265,8 @@ nibble3 <= "0000";
 	-- [BISAIN END]
 	
 	
-	-- same as the moore instantiation above, but used for B part 1 functionality
+	-- Used for B part 1 functionality
+	-- same as the moore instantiation above
 	Inst_MooreElevatorController_Shell_B1: MooreElevatorController_Shell_B1 PORT MAP(
 		clk => ClockBus_sig(25),
 		reset => btn(3),
@@ -242,6 +274,15 @@ nibble3 <= "0000";
 		up_down => switch(1),
 		floor => moore_floor_b1,
 		floor_tens => moore_floor_tens_b1
+	);
+	
+	-- Used for B part 2 functionality
+	Inst_MooreElevatorController_Shell_B2: MooreElevatorController_Shell_B2 PORT MAP(
+		clk => ClockBus_sig(25),
+		desired_floor(2) => switch(2),
+		desired_floor(1) => switch(1),
+		desired_floor(0) => switch(0),
+		output_floor => moore_floor_b2
 	);
 
 -----------------------------------------------------------------------------
