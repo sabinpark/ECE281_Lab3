@@ -25,6 +25,39 @@ As shown in the schematic, several signals such as the switch, btn, and reset ha
 
 # Lab
 
+## Code Critique
+
+#### Bad Code
+```vhdl
+	--clk'event and clk='1' is VHDL-speak for a rising edge
+	if clk'event and clk='1' then
+		...
+```
+Although this code works, this coding practice is bad because programmers may confuse this syntax and later try to do things like this (which will not synthesize properly):
+```vhdl
+	if clk'event and clk='1' and up_down='1' then
+		...
+```
+#### Good Code
+```vhdl
+	if rising_edge(clk) then
+		...
+```
+This code is good because it does the same thing as the bad code above, but it is easier to read and makes it less likely for errors in the future.
+
+#### Bad Code
+```vhdl
+	floor_state_machine: process(clk)
+		...
+```
+This code is bad because it creates memory.  Later on, the code will change *floor_state* depending on what the values of *up_down*, *stop*, and *reset* are.  If the sensitivity does not contain these signals as well, then although the code is still functional, we are committing bad coding practice by allowing vhdl to infer memory.
+#### Good Code
+```vhdl
+	floor_state_machine: process(clk, up_down, stop, reset)
+```
+This code fixes the problem above by putting *up_down*, *stop*, and *reset* in the sensitivity list.  Thus, memory is not accidentally created, but the program still works as it should.
+
+
 ## Part 1: Required Functionality
 
 ### Moore
