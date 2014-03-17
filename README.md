@@ -4,9 +4,9 @@ ECE281_Lab3
 Sabin's Lab 3
 
 # *Functionality Update*
-* Required Functionality: checked by Captain Silva
-* B Functionality: *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
-* A Functionality:
+* **Required Functionality:** checked by Captain Silva
+* **B Functionality:** *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
+* **A Functionality:**
 
 
 # Prelab
