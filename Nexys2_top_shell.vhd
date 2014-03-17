@@ -87,6 +87,8 @@ signal nibble0, nibble1, nibble2, nibble3 : std_logic_vector(3 downto 0);
 signal sseg0_sig, sseg1_sig, sseg2_sig, sseg3_sig : std_logic_vector(7 downto 0);
 signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 
+signal LED_sig : std_logic_vector (7 downto 0);
+
 
 --------------------------------------------------------------------------------------
 --Insert your design's component declaration below	
@@ -117,17 +119,20 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	END COMPONENT;
 	-- [BISAIN END]
 	
-	-- [BISAIN] Added PART B Functionality
+	-- [BISAIN] Added B Functionality
 	-- Used for the B part 1 functionality
 	-- same as the Moore component above
+	-- Also used for A part 1 functionality (moving lights)
 	COMPONENT MooreElevatorController_Shell_B1
 	PORT(
 		clk : IN std_logic;
+		led_clk : in std_logic;
 		reset : IN std_logic;
 		stop : IN std_logic;
 		up_down : IN std_logic;          
 		floor : OUT std_logic_vector(3 downto 0);
-		floor_tens : OUT std_logic_vector(3 downto 0)
+		floor_tens : OUT std_logic_vector(3 downto 0);
+		led_output : out std_logic_vector(7 downto 0)
 		);
 	END COMPONENT;
 	
@@ -154,6 +159,7 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	signal moore_floor_tens_b1 : std_logic_vector(3 downto 0);
 	
 	signal moore_floor_b2 : std_logic_vector(3 downto 0);
+	
 	-- [BISAIN END]
 
 begin
@@ -161,7 +167,13 @@ begin
 ----------------------------
 --code below tests the LEDs:
 ----------------------------
-LED <= CLOCKBUS_SIG(26 DOWNTO 19);
+--LED <= CLOCKBUS_SIG(26 DOWNTO 19);
+
+-- [BISAIN]
+-- A Functionality: Changes the LED light pattern
+-- sets the LED output to the signal I created that makes the light show
+	LED <= LED_sig;
+-- [BISAIN END]
 
 --------------------------------------------------------------------------------------------	
 --This code instantiates the Clock Divider. Reference the Clock Divider Module for more info
@@ -181,29 +193,18 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --		  Example: if you are not using 7-seg display #3 set nibble3 to "0000"
 --------------------------------------------------------------------------------------
 
--- Required Functionality [MOORE]
+-- Required Functionality [MOORE and MEALY]
 --nibble0 <= moore_floor;
 --nibble1 <= "0000";
---nibble2 <= "0000";
---nibble3 <= "0000";
+--nibble2 <= mealy_floor;
+--nibble3 <= mealy_next_floor;
 
--- Required Functionality [MEALY]
---nibble0 <= mealy_floor;
---nibble1 <= mealy_next_floor;
---nibble2 <= "0000";
---nibble3 <= "0000";
-
--- B Functionality [MORE FLOORS]
---nibble0 <= moore_floor_b1;
---nibble1 <= moore_floor_tens_b1;
---nibble2 <= "0000";
---nibble3 <= "0000";
-
--- B Functionality [CHANGE INPUTS]
-nibble0 <= moore_floor_b2;
-nibble1 <= "0000";
+-- B Functionality [MORE FLOORS and CHANGE INPUTS]
+-- A Functionality part 1 [MOVING LIGHTS only for MORE FLOORS]
+nibble0 <= moore_floor_b1;
+nibble1 <= moore_floor_tens_b1;
 nibble2 <= "0000";
-nibble3 <= "0000";
+nibble3 <= moore_floor_b2;
 
 --This code converts a nibble to a value that can be displayed on 7-segment display #0
 	sseg0: nibble_to_sseg PORT MAP(
@@ -243,6 +244,11 @@ nibble3 <= "0000";
 		sseg => SSEG
 	);
 	
+
+-----------------------------------------------------------------------------
+--Instantiate the design you wish to implement below and start wiring it up!:
+-----------------------------------------------------------------------------
+
 	-- [BISAIN]
 	Inst_MooreElevatorController_Shell: MooreElevatorController_Shell PORT MAP(
 		clk => ClockBus_sig(25),
@@ -267,13 +273,16 @@ nibble3 <= "0000";
 	
 	-- Used for B part 1 functionality
 	-- same as the moore instantiation above
+	-- Used also for A part 1 functionality
 	Inst_MooreElevatorController_Shell_B1: MooreElevatorController_Shell_B1 PORT MAP(
 		clk => ClockBus_sig(25),
+		led_clk => ClockBus_sig(21),
 		reset => btn(3),
 		stop => switch(0),
 		up_down => switch(1),
 		floor => moore_floor_b1,
-		floor_tens => moore_floor_tens_b1
+		floor_tens => moore_floor_tens_b1,
+		LED_output => LED_sig
 	);
 	
 	-- Used for B part 2 functionality
@@ -284,11 +293,6 @@ nibble3 <= "0000";
 		desired_floor(0) => switch(0),
 		output_floor => moore_floor_b2
 	);
-
------------------------------------------------------------------------------
---Instantiate the design you with to implement below and start wiring it up!:
------------------------------------------------------------------------------
-
 
 end Behavioral;
 
