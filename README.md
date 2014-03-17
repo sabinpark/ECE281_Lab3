@@ -291,8 +291,6 @@ The corresponding component and instantiation within the Nexys2_top_shell file w
 # Documentation
 
 ### Moving Lights
-For A part 1 functionality (moving lights), I looked through the code [here](http://startingelectronics.com/software/VHDL-CPLD-course/tut11-shift-register/) to get started.
-
-This site gave me the idea to set the last 7 led lights to the value of the first 7 led lights to create the moving light effect.  
+For A part 1 functionality (moving lights), I looked through the code [here](http://startingelectronics.com/software/VHDL-CPLD-course/tut11-shift-register/) to get started.  This site gave me the idea to set the last 7 led lights to the value of the first 7 led lights to create the moving light effect.  
 
 
