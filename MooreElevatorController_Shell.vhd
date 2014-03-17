@@ -45,12 +45,14 @@ begin
 
 --This line will set up a process that is sensitive to the clock
 floor_state_machine: process(clk)
-begin
+begin		
+
 	--clk'event and clk='1' is VHDL-speak for a rising edge
 	if rising_edge(clk) then  --EDIT: if clk'event and clk='1' then
 		--reset is active high and will return the elevator to floor1
 		--Question: is reset synchronous or asynchronous?
 		--Answer: synchronous b/c it is dependent on the clk
+		
 		if reset='1' then
 			floor_state <= floor1;
 		--now we will code our next-state logic

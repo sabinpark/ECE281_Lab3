@@ -21,17 +21,21 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity MooreElevatorController_Shell_B1 is
     Port ( clk : in  STD_LOGIC;
+			  led_clk : in std_logic;  -- added for A, Part 1 functionality
            reset : in  STD_LOGIC;
            stop : in  STD_LOGIC;
-           up_down : in  STD_LOGIC;
+           up_down : in  STD_LOGIC ;
            floor : out  STD_LOGIC_VECTOR(3 downto 0);
-			  floor_tens : out STD_LOGIC_VECTOR(3 downto 0));
+			  floor_tens : out STD_LOGIC_VECTOR(3 downto 0);
+			  LED_output : out std_logic_vector(7 downto 0));  -- added for A, Part 1 functionality
 end MooreElevatorController_Shell_B1;
 
 architecture Behavioral of MooreElevatorController_Shell_B1 is
 type floor_state_type is (floor2, floor3, floor5, floor7, floor11, floor13, floor17, floor19);
 
 signal floor_state : floor_state_type;
+
+signal shift_reg : STD_LOGIC_VECTOR(7 downto 0) := X"00";  -- added for A, Part 1 functionality
 
 begin
 
@@ -124,6 +128,34 @@ begin
 						
 end process;
 
+-- A Part 1 Functionality
+-- process that is sensitive to the led clock
+light_show: process(led_clk)
+begin
+	-- on the rising edge of the clk...
+	if rising_edge(led_clk) then
+		-- if we're moving up, then blink from left to right
+		if up_down = '1' and stop = '0' and floor_state /= floor19 then 
+            shift_reg(6 downto 0) <= shift_reg(7 downto 1);
+            shift_reg(7) <= '1';
+				if shift_reg(0) = '1' then
+					shift_reg <= "00000000";
+				end if;
+		-- if we're moving down, then blink from right to left
+		elsif up_down = '0' and stop = '0' and floor_state /= floor2 then
+				shift_reg(7 downto 1) <= shift_reg(6 downto 0);
+				shift_reg(0) <= '1';
+				if shift_reg(7) = '1' then
+					shift_reg <= "00000000";
+				end if;
+		-- otherwise, just display full led's
+		else
+				shift_reg <= "11111111";
+		end if;
+	end if;
+end process;
+
+
 -- Define the output logic
 floor <= "0010" when (floor_state = floor2) else
 			"0011" when (floor_state = floor3) else
@@ -137,6 +169,9 @@ floor <= "0010" when (floor_state = floor2) else
 			
 floor_tens <= "0001" when (floor_state = floor11 or floor_state = floor13 or floor_state = floor17 or floor_state = floor19) else
 				  "0000";
+
+LED_output <= shift_reg;  -- added for A, Part 1 functionality
+
 
 end Behavioral;
 
