@@ -40,7 +40,7 @@ signal shift_reg : STD_LOGIC_VECTOR(7 downto 0) := X"00";  -- added for A, Part 
 begin
 
 --This line will set up a process that is sensitive to the clock
-floor_state_machine: process(clk)
+floor_state_machine: process(clk, up_down, stop, reset, led_clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then

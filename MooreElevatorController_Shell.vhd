@@ -44,7 +44,7 @@ begin
 ---------------------------------------------
 
 --This line will set up a process that is sensitive to the clock
-floor_state_machine: process(clk)
+floor_state_machine: process(clk, up_down, stop, reset)
 begin		
 
 	--clk'event and clk='1' is VHDL-speak for a rising edge

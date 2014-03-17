@@ -255,7 +255,7 @@ nibble3 <= moore_floor_b2;
 		reset => btn(3),
 		stop => switch(0),
 		up_down => switch(1),
-		floor => moore_floor
+		floor => moore_floor	
 	);
 	-- [BISAIN END]
 	
