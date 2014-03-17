@@ -3,6 +3,12 @@ ECE281_Lab3
 
 Sabin's Lab 3
 
+# *Functionality Update*
+* Required Functionality: checked by Captain Silva
+* B Functionality: *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
+* A Functionality:
+
+
 # Prelab
 I was provided five files:
   1. Clock_Divider.vhd
@@ -87,10 +93,6 @@ Similar to the Moore test, I went through floor by floor and check the stop func
 
 
 ## Part 2: B Functionality
-
-### *UPDATE*
-Captain Silva checked my More Floors functionality.
-Dr. Neebel checked my Change Input functionality.
 
 I changed the Nexys2_top_shell so that each functionality part will be tested at once.  For example, for the required functionality, I set nibble0 for the moore functionality and nibbles 2 and 3 for the mealy functionality.  For the B functionality, I set nibbles 0 and 1 for the more floors functionality and nibble3 for the change inputs functionality.  This made it easier to comment out and test out the functionalities with minimal time loss.  Do not let the multiple sseg outputs confuse you!  Basically, the left side of the sseg displays one functionality and the right side displays another functionality. 
 
