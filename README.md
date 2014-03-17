@@ -48,6 +48,14 @@ I then added the component instantiation of the Moore elevator controller to the
 	);
 ```
 
+Now that I had the components and the instantiations in the nexys2 top shell file, I was able to update the schematic.  Below is the new top shell schematic:
+
+![alt text](https://raw.github.com/sabinpark/ECE281_Lab3/master/Nexys2_top_shell_schematic_part_B.PNG "Nexys2_top_shell Schematic with Part B")
+
+The zoomed in schematic of the moore and mealy portion is below:
+
+![alt text](https://raw.github.com/sabinpark/ECE281_Lab3/master/Moore_Mealy_Zoomed_Schematic.PNG "Moore/Mealy Zoomed Schematic")
+
 ### Test (Moore)
 I started at floor 1 and allowed the elevator to rise up floor by floor until it reached floor 4.  In the middle, I tested the stop funcitonality by setting *stop* to 1.  When *stop* equaled 1, the elevator stayed on the floor without moving up.  At floor 4, the elvator remained where it was.  Once I set *up_down* to 0, the elevator moved down floor by floor.  At floor 3, I tested out the stop functionality again, and the SSEG did display the current floor without going further down.  At floor 2, I set *stop* to 1, then reset the elevator.  The elevator then returned to 1 as it should.  Functionality = success!
 
@@ -79,6 +87,13 @@ Similar to the Moore test, I went through floor by floor and check the stop func
 
 
 ## Part 2: B Functionality
+
+### *UPDATE*
+Captain Silva checked my More Floors functionality.
+Dr. Neebel checked my Change Input functionality.
+
+I changed the Nexys2_top_shell so that each functionality part will be tested at once.  For example, for the required functionality, I set nibble0 for the moore functionality and nibbles 2 and 3 for the mealy functionality.  For the B functionality, I set nibbles 0 and 1 for the more floors functionality and nibble3 for the change inputs functionality.  This made it easier to comment out and test out the functionalities with minimal time loss.  Do not let the multiple sseg outputs confuse you!  Basically, the left side of the sseg displays one functionality and the right side displays another functionality. 
+
 *NOTE*: the lab guidance suggested that I use the MOORE elevator controller as the baseline for the additional functionality.  
 
 ### More Floors
@@ -191,5 +206,58 @@ I ran the newly generated bit file on the fpga with the switches initially set t
 ## Part 3: A Functionality
 
 ### Moving Lights
+For this functionality, I decided to add more code to the Moore elevator controller.  Specifically, I chose the *MooreElevatorController_Shell_B1* file to work with (the prime number floors).  I created an input called *LED_clk* which was used because I wanted the moving lights to be a bit faster than the clk cycle of the actual change in floors.  I also created another output of a std_logic_vector type (7:0) called *LED_output*, which was used to determine which LEDs would turn on or off.  I made an intermediary signal called *shift_reg*, which was used to manipulate and store the values of the LED output before setting it equal in the output logic section.
+
+*NOTE*  I set *LED_clk* to *ClockBus_sig(21)*, instead of *ClockBus_sig(25)*.  Again, this was so that the light show would happen at a faster rate--purely for aesthetic reasons.
+
+I created another process called *light_show*, which was sensitive to the new clock signal, *LED_clk*.  On the rising edge of the clock, the process checked for the values of *up_down* and *stop*, and also checked whether the current floor was 2 (lowest floor) or 19 (highest floor).  The code made it so that the LEDs would turn on from the left to the right only if *up_down* was 1, *stop* was 0, and the current floor was not floor 19.  Likewise, the LEDs would turn on from right to left only if *up_down* was 0, *stop* was 0, and the current floor was not floor 2.  Otherwise, the LEDs would just all be turned on.
+
+Here is the code for the process *light_show*:
+```vhdl
+	-- A Part 1 Functionality
+	-- process that is sensitive to the led clock
+	light_show: process(led_clk)
+	begin
+		-- on the rising edge of the clk...
+		if rising_edge(led_clk) then
+			-- if we're moving up, then blink from left to right
+			if up_down = '1' and stop = '0' and floor_state /= floor19 then 
+	            shift_reg(6 downto 0) <= shift_reg(7 downto 1);
+	            shift_reg(7) <= '1';
+					if shift_reg(0) = '1' then
+						shift_reg <= "00000000";
+					end if;
+			-- if we're moving down, then blink from right to left
+			elsif up_down = '0' and stop = '0' and floor_state /= floor2 then
+					shift_reg(7 downto 1) <= shift_reg(6 downto 0);
+					shift_reg(0) <= '1';
+					if shift_reg(7) = '1' then
+						shift_reg <= "00000000";
+					end if;
+			-- otherwise, just display full led's
+			else
+					shift_reg <= "11111111";
+			end if;
+		end if;
+end process;
+
+```
+
+At the end, I simply set *LED_output* to *shift_reg*.
+```vhdl
+	LED_output <= shift_reg;  -- added for A, Part 1 functionality
+```
+
+The corresponding component and instantiation within the Nexys2_top_shell file was updated and the program was tested on the fpga.  Everything worked as it was supposed to!
+
 
 ### Multiple Elevators
+
+# Documentation
+
+### Moving Lights
+For A part 1 functionality (moving lights), I looked through the code [here](http://startingelectronics.com/software/VHDL-CPLD-course/tut11-shift-register/) to get started.
+
+This site gave me the idea to set the last 7 led lights to the value of the first 7 led lights to create the moving light effect.  
+
+
