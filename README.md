@@ -6,7 +6,7 @@ Sabin's Lab 3
 # *Functionality Update*
 * **Required Functionality:** checked by Captain Silva
 * **B Functionality:** *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
-* **A Functionality:**
+* **A Functionality:** *MOVING LIGHTS* checked by Dr. Neebel and Captain Silva
 
 
 # Prelab
