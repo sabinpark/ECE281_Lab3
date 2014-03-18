@@ -6,7 +6,7 @@ Sabin's Lab 3
 # *Functionality*
 * **Required Functionality:** *BASIC MOORE* and *BASIC MEALY* checked by Captain Silva
 * **B Functionality:** *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
-* **A Functionality:** *MOVING LIGHTS* checked by Dr. Neebel and Captain Silva
+* **A Functionality:** *MOVING LIGHTS* and *MULTIPLE ELEVATORS* checked by Dr. Neebel and Captain Silva
 
 
 # Prelab
