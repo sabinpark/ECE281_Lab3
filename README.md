@@ -4,7 +4,7 @@ ECE281_Lab3
 Sabin's Lab 3
 
 # *Functionality Update*
-* **Required Functionality:** checked by Captain Silva
+* **Required Functionality:** *BASIC MOORE* and *BASIC MEALY* checked by Captain Silva
 * **B Functionality:** *MORE FLOORS* checked by Captain Silva; *CHANGE INPUTS* checked by Dr. Neebel
 * **A Functionality:** *MOVING LIGHTS* checked by Dr. Neebel and Captain Silva
 
