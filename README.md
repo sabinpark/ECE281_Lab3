@@ -289,7 +289,7 @@ At the end, I simply set *LED_output* to *shift_reg*.
 	LED_output <= shift_reg;  -- added for A, Part 1 functionality
 ```
 
-The corresponding component and instantiation within the Nexys2_top_shell file was updated and the program was tested on the fpga.  Everything worked as it was supposed to!
+The corresponding component and instantiation within the Nexys2_top_shell file was updated and the program was tested on the fpga.  When *up_down* was 1 and *stop* was 0, the lights flashed from left to right, and vice versa.  When *stop* was equal to 1, then all LEDs were turned on equally, symbolizing that the elevator is still functional, but not currently moving.  Everything worked as it was supposed to!
 
 
 ### Multiple Elevators
@@ -371,9 +371,11 @@ At this point, at least one of the elevators is on the user's floor.  The elevat
 
 As for the output logic, everything is essentially the same except there are now more signals.
 
+I (and two teachers) ran through various tests and the program did work successfully!
+
 # Documentation
 
 ### Moving Lights
 For A part 1 functionality (moving lights), I looked through the code [here](http://startingelectronics.com/software/VHDL-CPLD-course/tut11-shift-register/) to get started.  This site gave me the idea to set the last 7 led lights to the value of the first 7 led lights to create the moving light effect.  
 
-
+No other help received.
