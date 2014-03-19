@@ -89,7 +89,6 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 
 signal LED_sig : std_logic_vector (7 downto 0);
 
-
 --------------------------------------------------------------------------------------
 --Insert your design's component declaration below	
 --------------------------------------------------------------------------------------
@@ -145,6 +144,21 @@ signal LED_sig : std_logic_vector (7 downto 0);
 		);
 	END COMPONENT;
 	-- [BISAIN END]
+	
+	-- [BISAIN]  Added A part 2 functionality: Multiple Elevators
+	COMPONENT MooreElevatorController_Shell_A2
+	PORT(
+		clk : IN std_logic;
+		desired_floor : IN std_logic_vector(3 downto 0);
+		request_floor : IN std_logic_vector(3 downto 0);  
+		pickmeup : in std_logic;
+		E1_floor_output : OUT std_logic_vector(3 downto 0);
+		E2_floor_output : OUT std_logic_vector(3 downto 0);
+		current_floor_output : OUT std_logic_vector(3 downto 0);
+		desired_floor_output : OUT std_logic_vector(3 downto 0)
+		);
+	END COMPONENT;	
+	-- [BISAIN END]
 
 --------------------------------------------------------------------------------------
 --Insert any required signal declarations below
@@ -160,6 +174,10 @@ signal LED_sig : std_logic_vector (7 downto 0);
 	
 	signal moore_floor_b2 : std_logic_vector(3 downto 0);
 	
+	signal A_E1_floor_output : std_logic_vector(3 downto 0);
+	signal A_E2_floor_output : std_logic_vector(3 downto 0);
+	signal A_current_floor_output : std_logic_vector(3 downto 0);
+	signal A_desired_floor_output : std_logic_vector(3 downto 0);
 	-- [BISAIN END]
 
 begin
@@ -172,7 +190,17 @@ begin
 -- [BISAIN]
 -- A Functionality: Changes the LED light pattern
 -- sets the LED output to the signal I created that makes the light show
-	LED <= LED_sig;
+	--LED <= LED_sig;
+	
+-- A part 2:  purely for aesthetic reasons
+	LED(7) <= Clockbus_sig(26);
+	LED(6) <= Clockbus_sig(26);
+	LED(5) <= Clockbus_sig(26);
+	LED(4) <= Clockbus_sig(26);
+	LED(3) <= Clockbus_sig(26);
+	LED(2) <= Clockbus_sig(26);
+	LED(1) <= Clockbus_sig(26);
+	LED(0) <= Clockbus_sig(26);
 -- [BISAIN END]
 
 --------------------------------------------------------------------------------------------	
@@ -201,10 +229,16 @@ begin
 
 -- B Functionality [MORE FLOORS and CHANGE INPUTS]
 -- A Functionality part 1 [MOVING LIGHTS only for MORE FLOORS]
-nibble0 <= moore_floor_b1;
-nibble1 <= moore_floor_tens_b1;
-nibble2 <= "0000";
-nibble3 <= moore_floor_b2;
+--nibble0 <= moore_floor_b1;
+--nibble1 <= moore_floor_tens_b1;
+--nibble2 <= "0000";
+--nibble3 <= moore_floor_b2;
+
+-- A Functionality part 2 [MULTIPLE ELEVATORS]
+nibble0 <= A_desired_floor_output;
+nibble1 <= A_current_floor_output;
+nibble2 <= A_E2_floor_output;
+nibble3 <= A_E1_floor_output;
 
 --This code converts a nibble to a value that can be displayed on 7-segment display #0
 	sseg0: nibble_to_sseg PORT MAP(
@@ -294,5 +328,23 @@ nibble3 <= moore_floor_b2;
 		output_floor => moore_floor_b2
 	);
 
+	-- Used for A part 2 functionality
+	Inst_MooreElevatorController_Shell_A2: MooreElevatorController_Shell_A2 PORT MAP(
+		clk => ClockBus_sig(24),
+		desired_floor(3) => '0',
+		desired_floor(2) => switch(2),
+		desired_floor(1) => switch(1),
+		desired_floor(0) => switch(0),
+		request_floor(3) => '0',
+		request_floor(2) => switch(7),
+		request_floor(1) => switch(6),
+		request_floor(0) => switch(5),	
+		pickmeup => btn(3), 
+		E1_floor_output => A_E1_floor_output,
+		E2_floor_output => A_E2_floor_output,
+		current_floor_output => A_current_floor_output,
+		desired_floor_output => A_desired_floor_output 
+	);
+	
 end Behavioral;
 
