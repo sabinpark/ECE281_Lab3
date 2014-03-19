@@ -293,6 +293,83 @@ The corresponding component and instantiation within the Nexys2_top_shell file w
 
 
 ### Multiple Elevators
+For this funcitonality, I created a whole new module called *MooreElevatorController_Shell_A2*.  This new module had many inputs and outputs as shown below:
+```vhdl
+Port ( clk : in  STD_LOGIC;
+       desired_floor : in  STD_LOGIC_VECTOR (3 downto 0);  -- designated by the switches
+       request_floor : in  STD_LOGIC_VECTOR (3 downto 0);  -- floor that requests elevator; use switches
+       pickmeup : in  std_logic;
+       E1_floor_output : out STD_LOGIC_VECTOR (3 downto 0);  -- sseg
+       E2_floor_output : out STD_LOGIC_VECTOR (3 downto 0);  -- sseg
+       current_floor_output : out STD_LOGIC_VECTOR (3 downto 0);  -- sseg
+       desired_floor_output : out STD_LOGIC_VECTOR (3 downto 0)); -- sseg
+```
+*desired_floor* is the switch-designated floor the user wants to go to.  *request_floor* is the switch-designated floor the user starts from.  As shown in the updated nexys top shell, *desired_floor* is determined using switches 7 to 5, while *request_floor* is determined by switches 2 to 0. 
+
+*pickmeup* is a signal used to tell the program that the user now wants to change floors.  Metaphorically, it is like the "close doors" button on an actual elevator.  *pickmeup* is determined by the press button 3.  
+
+*E1_floor_output* and *E2_floor_output* are outputs that are used to show which floor each elevator is on using the SSEG.  I set E1 to SSEG 4 and E2 to SSEG 3.  *current_floor_output* and *desired_floor_output* are obviously the current and desired floors which are displayed on SSEG SSEG 1 and SSEG 0, respectively.  See the image below for help.
+
+![alt text](https://raw.github.com/sabinpark/ECE281_Lab3/master/Multiple_Elevators_Guide.PNG "Multiple Elevators Guide")
+
+To work with all of the inputs and outputs, I created intermediary signals:
+```vhdl
+	type floor_state_type is (floor0, floor1, floor2, floor3, floor4, floor5, floor6, floor7);
+	signal floor_state : floor_state_type;
+	signal E1_floor_state : floor_state_type;
+	signal E2_floor_state : floor_state_type;
+	
+	signal current_floor : STD_LOGIC_VECTOR (3 downto 0) := request_floor;
+	signal E1_current_floor : STD_LOGIC_VECTOR (3 downto 0) := "0111";
+	signal E2_current_floor : STD_LOGIC_VECTOR (3 downto 0) := "0111";
+	
+	signal elevator_number : bit;  -- '1' is elevator 1, '0' is elevator 2
+	signal transporting : boolean := false;
+	signal start : boolean := false;
+```
+Since I have two elevators, I created a floor_state_type signal for each elevator.  I then created the current floor signals for both elevators and for the user's current floor.  
+
+*NOTE* These signals were arbitrarily initialized to the values shown above so that the user can see noticeable changes right when the program starts without any need to manipulate the inputs.  
+
+*elevator_number* is used to determine which elevator to move.  I made the executive decision to use elevator 1 when *elevator_number* = 1, and use elevator 2 when *elevator_number* = 0.  *transporting* is a boolean that is used to separate the two main stages of this functionality: 1) pick an elevator and go to the requested floor and 2) take the passengers from requested floor to the desired floor.  *start* is used to ensure that the two stages are properly separated.  If not separated, the program will continue to jump between floors and will not be guaranteed to be in a stable state.  I set *start* to true whenever the button is pressed (*pickmeup* = 1).  In this way, the program is essentially able to restart from new user inputs.
+
+The actual process is clock sensitive to the rising edge.  First, the program will set the floor states of both elevators and the user's current floor with the corresponding std_logic values.  
+
+For example:
+```vhdl
+if current_floor = "-000" then floor_state <= floor0;
+	...
+```
+
+The program will then check if *pickmeup* is 1.  If so, *start* will be set to *true*, allowing the actual floor manipulation to begin.  *NOTE* I created both *pickmeup* and *start* in such a way because I wanted the program to re-read the user inputs right when the button is pressed (with the rising edge), and not constantly re-read the user inputs (the elevators would not properly move the floors if that happened).  
+
+And so, if *start* is true, then the program sets *current_floor* to *request_floor*, which will be important for manipulating the value of *current_floor*.  From here, if *transporting* is false (meaning the user does not have an elevator on their floor), then the program begins to compare the distance of the elevators to the current floor of the user.  
+```vhdl
+	-- if E1 is closer to the requested floor...
+	if abs(signed(request_floor) - signed(E1_current_floor)) < 
+		abs(signed(request_floor) - signed(E2_current_floor)) then
+		...
+```
+*NOTE* I had to use *signed* instead of *unsigned* because subtraction would not have worked without it.  
+
+From here, the program chooses the elevator to use (set *elevator_number* to the desired elevator to move), then changes the elevator one floor at a time until the elevator's floor matches the user's floor.
+```vhdl
+	-- if requested floor is below the elevator...
+		if request_floor < E1_current_floor then
+			E1_current_floor <= std_logic_vector(unsigned(E1_current_floor) - 1);
+		-- if requested floor is above the elevator
+		elsif request_floor > E1_current_floor then
+			E1_current_floor <= std_logic_vector(unsigned(E1_current_floor) + 1);
+		else
+			E1_current_floor <= request_floor;
+			transporting <= true;
+		end if;
+```
+If both elevators are of equal distance from the user's floor, the program will simply choose elevator 1.
+
+At this point, at least one of the elevators is on the user's floor.  The elevator will now move up to the desired floor in almost exactly the same manner it did to reach the originally requested floor.  The user's floor is incremented/decremented exxactly the same as the moving elevator.  This shows that the user is inside (moving with) the elevator.  The elevator and the user will then stop once each signal equals the desired floor.  *start* and *transporting* are both reset to *false*, allowing the user to change the inputs as desired.  
+
+As for the output logic, everything is essentially the same except there are now more signals.
 
 # Documentation
 
